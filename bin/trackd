@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+ 
+# Skinny daemon command line interface script.
+# Run <tt>trackd -h</tt> to get more usage.
+#### do we need this?
+# require File.join(File.dirname(__FILE__), '..','lib','trackd')
+####
+
+require 'rubygems'
+require 'bundler'
+Bundler.setup :boot
+
+require 'thin'
+ 
+rackup_file = File.join(File.dirname(__FILE__),'..','lib','trackd','config.ru')
+ 
+argv = ARGV
+argv << ["-R", rackup_file] unless ARGV.include?("-R")
+argv << ["-p", "2003"] unless ARGV.include?("-p")
+argv << ["-e", "production"] unless ARGV.include?("-e")
+Thin::Runner.new(argv.flatten).run!
