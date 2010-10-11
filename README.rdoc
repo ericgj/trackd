@@ -8,30 +8,30 @@ as a skinny daemon + command-line client.
     # start server daemon
     trackd start -d   
     
-    # start time  => POST /projects/FooProject/times
-    track FooProject work on baz task
+    # start time  => POST /projects/FooProject/logs?task=baz%20task
+    track FooProject baz task
     # or
-    track start FooProject work on baz task
+    track start FooProject baz task
     
-    # stop time on current  => PUT /projects/FooProject/times/1
+    # stop time on current  => PUT /logs/1
     track stop
     
-    # restart current   => POST /projects/FooProject/times
+    # restart current   => POST /projects/FooProject/logs?task=baz%20task
     track restart
     
-    # print report of times   => GET /times
+    # print report of times   => GET /logs
     track cat
     
-    # print summary report by project   => GET /times?summary=projects
+    # print summary report by project   => GET /logs?summary=projects
     track cat --summary projects
     
     # add shortcut
     track shortcut add fp FooProject
     
-    # add time to named task    =>  POST /projects/FooProject/times
-    track +00:30 FooProject work on baz task
+    # add time to named task    =>  POST /projects/FooProject/logs?task=baz%20task&time=30
+    track add 00:30 FooProject baz task
     
-    # subtract time from current  => POST /projects/FooProject/times
-    track -01:00
+    # subtract time from current  => POST /projects/FooProject/logs?task=baz%20task&time=-60
+    track sub 01:00
         
 

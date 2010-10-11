@@ -1,0 +1,55 @@
+## Draft URL scheme and message format
+
+| Command         | Verb | URL                   | Params         | Redirect to              |
+| start x y       | POST | /projects/x/logs      | task=y         | /projects/x/logs/:id (1) |
+| restart         | POST | /projects/x/logs      | task=y         | /projects/x/logs/:id     |
+| stop            | PUT  | /logs/:id             | -              | /projects/x/logs/:id     |
+| add t x y       | POST | /projects/x/logs      | task=y&time=t  | /projects/x/logs/:id     |
+| sub t x y       | POST | /projects/x/logs      | task=y&time=-t | /projects/x/logs/:id     |
+| cat             | GET  | /logs (2)             | -              | -                        |
+| cat --summary f | GET  | /logs (3)             | summary=f      | -                        |
+
+(1) project-log message:
+
+    project : <string>
+    task : <string>
+    started_at : <time>
+    ended_at : <time>
+    duration : <int>
+    
+(2) logs message:
+
+    -
+      project : <string>
+      logs :
+        - 
+          task : <string>
+          started_at : <time>
+          ended_at : <time>
+          duration : <int>
+        -
+          # ...
+      project : <string>
+      logs :
+        - # ...
+    # ...
+    
+(3) logs project summary message:
+
+    -
+      project : <string>
+      last_started_at : <time>
+      last_ended_at : <time>
+      total_duration : <int>
+    -
+      # ...
+      
+      
+## Client state
+
+Client needs to persist _current_ log, project and task between calls.  
+Since it's not a web client I propose writing these to a text file in ~/.
+
+Note that my workflow is really one project-task at a time, so no need to get complicated.
+When `track start y` and there's a current log, it should `track stop` first.
+Or I suppose this could be handled by the server.

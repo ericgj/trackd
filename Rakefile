@@ -1,3 +1,5 @@
+##TODO: take out the jeweler business, I'd rather use gem-release
+
 require 'rubygems'
 require 'rake'
 
