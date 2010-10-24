@@ -5,7 +5,8 @@ require 'rubygems'
 #Bundler.setup :default
 
 require 'sinatra/base'
-require 'json-pure'
+#require 'json-pure'
 require 'dm-core'
 require 'dm-migrations'
+require 'dm-serializer'
 require 'trackd/app'

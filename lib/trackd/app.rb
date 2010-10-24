@@ -2,12 +2,12 @@
 module Trackd
   class App < Sinatra::Base
 
-    ENV['APP_PATH'] = File.expand_path(File.dirname(__FILE__))
+    SINATRA_ROOT = File.expand_path(File.dirname(__FILE__))
     
     #---- Dbase config
     
     configure :production do
-      db = "sqlite3:///#{ENV['APP_PATH']}/db/production.sqlite3"
+      db = "sqlite3:///#{SINATRA_ROOT}/db/production.sqlite3"
       DataMapper::Logger.new(STDOUT, :debug)    #TODO to file
       DataMapper.setup(:default, db)
     end
@@ -19,7 +19,7 @@ module Trackd
     end
     
     configure :development do
-      db = "sqlite3:///#{ENV['APP_PATH']}/db/development.sqlite3"
+      db = "sqlite3:///#{SINATRA_ROOT}/db/development.sqlite3"
       DataMapper::Logger.new(STDOUT, :debug)
       DataMapper.setup(:default, db)
     end
@@ -42,23 +42,22 @@ module Trackd
     # cat
     get '/1/logs' do
       content_type mime_type(:json), :charset => 'utf-8'
-      logs = Log.all.descending_by_started_at 
-      logs.to_json    # not sure this will work
+      logs = Log.all(:order => [:started_at.desc])
+      logs.to_json(:methods => [:project, :duration])
     end
 
     
     get '/1/logs/:id' do |id|
       content_type mime_type(:json), :charset => 'utf-8'
-      log = Log.find(id)      
-      log.to_json   # defined in model ?
+      log = Log.get(id)      
+      log.to_json(:methods => [:project, :duration])
     end
     
     # stop
     put '/1/logs/:id' do |id|
       t = Time.now
-      log = Log.find(id)
-      log.stopped_at = t
-      log.save
+      log = Log.get(id)
+      log.stop
       redirect "/1/logs/#{log.id}"
     end
     
@@ -69,12 +68,8 @@ module Trackd
       stop_current
       dur = (params[:time] || 0).to_i
       task = params[:task]
-      p = Project.create_or_new(:name => name)
-      log = Log.new(:task => task, 
-                    :adjusted => dur,
-                    :project => p)
-      log.start(t)
-      log.save
+      p = Project.first_or_create(:name => name)
+      log = p.add_log(task, dur)
       redirect "/1/logs/#{log.id}"
     end
     
@@ -82,13 +77,15 @@ module Trackd
    protected
    
     def load_models
-      Dir[File.join(ENV['APP_PATH'],'models')].each do |f|
+      Dir[File.join(SINATRA_ROOT,'models')].each do |f|
         require f
       end      
     end
     
     def stop_current(t = Time.now)
-      Log.current.each {|log| log.stop(t) }
+      Log.transaction do
+        Log.started.each {|log| log.stop(t) }
+      end
     end
     
   end
