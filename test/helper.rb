@@ -7,8 +7,9 @@ require 'rack/test'
 ENV['RACK_ENV'] = 'test'
 
 require 'sinatra'
-Sinatra::Base.set :environment, :test
+#Sinatra::Base.set :environment, :test
 
+# Helper modules
 Dir[File.join(File.dirname(__FILE__),'shared','**','*.rb')].each do |f|
   require f
 end

@@ -7,6 +7,7 @@ module Trackd
     property :adjusted, Integer, :default => 0
     property :started_at, Time
     property :stopped_at, Time
+    property :project_id, Integer
     
     belongs_to :project
     
@@ -16,6 +17,12 @@ module Trackd
     
     def self.stopped
       all :stopped_at.not => nil
+    end
+    
+    def self.total_time
+      repository(:default).adapter.select(
+        'SELECT SUM(stopped_at - started_at + adjusted) FROM trackd_logs' 
+      )[0]
     end
     
     def duration

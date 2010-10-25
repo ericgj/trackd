@@ -7,7 +7,7 @@ module Trackd
     
     has n, :logs
     
-    def add_log(task = nil, dur = 0)
+    def start_log(task = nil, dur = 0)
       log = Log.new(:task => task, :adjusted => dur)
       self.logs << log
       log.start; log

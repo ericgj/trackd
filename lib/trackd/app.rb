@@ -39,7 +39,8 @@ module Trackd
     #---- REST paths
     
     get '/' do
-      "Trackd server is running: tracking #{Project.all.count} projects"
+      sum = Log.total_time
+      "Trackd server is running: tracking #{sum ? sum : 'zero'} hours for #{Project.count} projects"
     end
     
     #---- API v1
@@ -74,7 +75,7 @@ module Trackd
       dur = (params[:time] || 0).to_i
       task = params[:task]
       p = Project.first_or_create(:name => name)
-      log = p.add_log(task, dur)
+      log = p.start_log(task, dur)
       redirect "/1/logs/#{log.id}"
     end
     
