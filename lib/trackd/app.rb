@@ -1,9 +1,15 @@
 
 module Trackd
   class App < Sinatra::Base
-
+    
     SINATRA_ROOT = File.expand_path(File.dirname(__FILE__))
     
+    def self.load_models
+      Dir[File.join(SINATRA_ROOT,'models','**','*.rb')].each do |f|
+        require f
+      end      
+    end
+
     #---- Dbase config
     
     configure :production do
@@ -26,10 +32,9 @@ module Trackd
 
     configure :production, :test, :development do
       load_models
-      DataMapper.auto_migrate! unless DataMapper.storage_exists?
+      DataMapper.auto_migrate! #  unless DataMapper.repository(:default).storage_exists?('trackd_logs')
       DataMapper.finalize
     end
-
 
     #---- REST paths
     
@@ -73,15 +78,9 @@ module Trackd
       redirect "/1/logs/#{log.id}"
     end
     
-    
+       
    protected
    
-    def load_models
-      Dir[File.join(SINATRA_ROOT,'models')].each do |f|
-        require f
-      end      
-    end
-    
     def stop_current(t = Time.now)
       Log.transaction do
         Log.started.each {|log| log.stop(t) }
