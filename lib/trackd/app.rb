@@ -13,26 +13,28 @@ module Trackd
     #---- Dbase config
     
     configure :production do
-      db = "sqlite3:///#{SINATRA_ROOT}/db/production.sqlite3"
+      db = "sqlite3://#{SINATRA_ROOT}/db/production.sqlite3"
       DataMapper::Logger.new(STDOUT, :debug)    #TODO to file
       DataMapper.setup(:default, db)
     end
     
     configure :test do
       db = "sqlite3::memory:"
-      DataMapper::Logger.new(STDOUT, :debug)
+      DataMapper::Logger.new(STDOUT, :debug)     #TODO to file
       DataMapper.setup(:default, db)
     end
     
     configure :development do
-      db = "sqlite3:///#{SINATRA_ROOT}/db/development.sqlite3"
-      DataMapper::Logger.new(STDOUT, :debug)
+      db = "sqlite3://#{SINATRA_ROOT}/db/development.sqlite3"
+      DataMapper::Logger.new(STDOUT, :debug)     #TODO to file
       DataMapper.setup(:default, db)
     end
 
     configure :production, :test, :development do
       load_models
-      DataMapper.auto_migrate! #  unless DataMapper.repository(:default).storage_exists?('trackd_logs')
+      DataMapper.auto_migrate! \
+        if DataMapper.repository(:default).adapter.options['path'] == ':memory:' 
+        #  unless DataMapper.storage_exists?
       DataMapper.finalize
     end
 

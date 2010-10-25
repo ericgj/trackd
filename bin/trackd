@@ -7,9 +7,6 @@
 ####
 
 require 'rubygems'
-require 'bundler'
-Bundler.setup :boot
-
 require 'thin'
  
 rackup_file = File.join(File.dirname(__FILE__),'..','lib','trackd','config.ru')

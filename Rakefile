@@ -1,24 +1,6 @@
-##TODO: take out the jeweler business, I'd rather use gem-release
-
 require 'rubygems'
 require 'rake'
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "trackd"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "ericgj72@gmail.com"
-    gem.homepage = "http://github.com/ericgj/trackd"
-    gem.authors = ["Eric Gjertsen"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
+require File.join(File.dirname(__FILE__), "lib", "trackd", "version")
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
@@ -27,29 +9,33 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
-end
-
-task :test => :check_dependencies
-
-task :default => :test
-
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
+  #version = File.exist?('VERSION') ? File.read('VERSION') : ""
+  version = Trackd::VERSION
+  
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "trackd #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+
+namespace 'db' do
+
+  task 'create' do
+    #TODO: look up storage file name in YAML based on environment
+    `sqlite3 lib/trackd/db/#{ENV['RACK_ENV']}.sqlite3 'select sqlite_version(*)'`
+  end
+  
+  task 'auto_migrate' => 'db:create' do
+    #TODO: look up db options in YAML based on environment
+  end
+ 
+end
+
+
+task :test => :check_dependencies
+
+task :default => :test
+
