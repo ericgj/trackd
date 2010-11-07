@@ -21,7 +21,10 @@ module Trackd
     
     def self.total_time
       repository(:default).adapter.select(
-        'SELECT SUM(stopped_at - started_at + adjusted) FROM trackd_logs' 
+        %q{ SELECT SUM(t.dur) FROM 
+              (SELECT (strftime('%s',stopped_at) - strftime('%s',started_at) + adjusted) AS dur FROM trackd_logs
+              ) as t
+          }
       )[0]
     end
     

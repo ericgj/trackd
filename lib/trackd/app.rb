@@ -42,7 +42,7 @@ module Trackd
     
     get '/' do
       sum = Log.total_time
-      "Trackd server is running: tracking #{sum ? sum : 'zero'} hours for #{Project.count} projects"
+      "Trackd server is running: tracking #{sum ? (sum.to_f / (60 * 60)).round : 'zero'} hours for #{Project.count} projects"
     end
     
     #---- API v1
