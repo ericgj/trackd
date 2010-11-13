@@ -5,12 +5,23 @@ module Trackd
     PROJECT_ROOT = File.expand_path(File.join(File.dirname(__FILE__),'..', '..'))
     SINATRA_ROOT = File.expand_path(File.dirname(__FILE__))
     
+    def self.logger; @logger ||= DataMapper.logger; end
+    
     def self.load_models
       Dir[File.join(SINATRA_ROOT,'models','**','*.rb')].each do |f|
         require f
       end      
     end
 
+    def self.at_exit
+      logger.info "Trackd::App shutdown started"
+      logger.info "Stopping started logs..."
+      t = Time.now
+      Log.started.each do |log|
+        log.stop t
+      end
+    end
+    
     #---- Dbase config
     
     configure :production do
@@ -37,25 +48,28 @@ module Trackd
         if DataMapper.repository(:default).adapter.options['path'] == ':memory:' 
         #  unless DataMapper.storage_exists?
       DataMapper.finalize
+      logger.info "Database connection established"
     end
 
+    configure { logger.info "Trackd::App is running" }
+    
     #---- REST paths
     
     get '/' do
       sum = Log.total_time
-      "Trackd server is running: tracking #{sum ? (sum.to_f / (60 * 60)).round : 'zero'} hours for #{Project.count} projects"
+      "Trackd: tracking #{sum ? (sum.to_f / (60 * 60)).round : 'zero'} hours for #{Project.count} projects"
     end
     
     #---- API v1
     
     # cat
-    get '/1/logs', :provides => :json do
+    get '/1/logs' do
       logs = Log.all(:order => [:started_at.desc])
       logs.to_json(:methods => [:project, :duration])
     end
 
     
-    get '/1/logs/:id', :provides => :json do |id|
+    get '/1/logs/:id' do |id|
       log = Log.get(id)      
       log.to_json(:methods => [:project, :duration])
     end
