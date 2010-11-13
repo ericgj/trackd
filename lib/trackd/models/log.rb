@@ -27,7 +27,7 @@ module Trackd
           }
       )[0]
     end
-    
+        
     def duration
       t = Time.now
       ((self.stopped_at || t) - (self.started_at || t) + self.adjusted).to_i
