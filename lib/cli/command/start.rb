@@ -6,7 +6,7 @@ module Track
       self.uri_path = "/1/projects/:project/logs"
       
       report_as do |r| 
-        "#{r['project']['name']} - #{r['task']} started at #{r['started_at']}" 
+        "#{r['project']['name']} - #{r['task']} (#{r['id']}) started at #{r['started_at']}" 
       end
       
       def parse!
@@ -15,7 +15,7 @@ module Track
       end
       
       def run
-        handle_response post(uri, {'task' => @params['task']})
+        render post(uri, {'task' => @params['task']})
       end
             
     end

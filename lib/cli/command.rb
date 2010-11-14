@@ -58,13 +58,13 @@ module Track
       def run
       end
       
-      def handle_response(resp)
+      def render(resp)
         case resp
         when Net::HTTPSuccess
           #puts resp.body
           report JSON.parse(resp.body)
         when Net::HTTPRedirection
-          handle_response get(resp['location'])
+          render get(resp['location'])
         else
           #TODO
         end

@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH.unshift curdir = File.expand_path(File.dirname(__FILE__))
 
 require 'rubygems'
 #require 'bundler'
@@ -12,6 +12,6 @@ require 'dm-serializer'
 require 'dm-transactions'
 
 # load core extensions before app but after gems
-Dir['core_ext/**/*.rb'].each {|f| require f}
+Dir[File.join(curdir,'core_ext','**','*.rb')].each {|f| require f}
 
 require 'trackd/app'

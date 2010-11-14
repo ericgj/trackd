@@ -19,7 +19,7 @@ module Trackd
       all :stopped_at.not => nil
     end
     
-    def self.total_time
+    def self.total_duration
       repository(:default).adapter.select(
         %q{ SELECT SUM(t.dur) FROM 
               (SELECT (strftime('%s',stopped_at) - strftime('%s',started_at) + adjusted) AS dur FROM trackd_logs

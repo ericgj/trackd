@@ -13,13 +13,16 @@ module Trackd
       end      
     end
 
+    def self.stop_current(t = Time.now)
+      Log.transaction do
+        Log.started.each {|log| log.stop(t) }
+      end
+    end
+    
     def self.at_exit
       logger.info "Trackd::App shutdown started"
       logger.info "Stopping started logs..."
-      t = Time.now
-      Log.started.each do |log|
-        log.stop t
-      end
+      stop_current
     end
     
     #---- Dbase config
@@ -56,8 +59,8 @@ module Trackd
     #---- REST paths
     
     get '/' do
-      sum = Log.total_time
-      "Trackd: tracking #{sum ? (sum.to_f / (60 * 60)).round : 'zero'} hours for #{Project.count} projects"
+      sum = Log.total_duration
+      "Trackd: tracking #{sum ? sum.seconds_to_hhmm : 'zero'} hours for #{Project.count} projects"
     end
     
     #---- API v1
@@ -82,7 +85,6 @@ module Trackd
       redirect "/1/logs/#{log.id}"
     end
     
-    
     # start / restart
     post '/1/projects/:name/logs' do |name|
       t = Time.now
@@ -95,13 +97,9 @@ module Trackd
     end
     
        
-   protected
+   private
    
-    def stop_current(t = Time.now)
-      Log.transaction do
-        Log.started.each {|log| log.stop(t) }
-      end
-    end
-    
+    def stop_current(t = Time.now); self.class.stop_current(t); end
+       
   end
 end
