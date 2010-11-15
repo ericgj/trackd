@@ -8,7 +8,7 @@ require 'sinatra/base'
 #require 'json-pure'
 require 'dm-core'
 require 'dm-migrations'
-require 'dm-serializer'
+#require 'dm-serializer'
 require 'dm-transactions'
 
 # load core extensions before app but after gems

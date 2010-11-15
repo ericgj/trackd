@@ -6,7 +6,7 @@ module Track
       self.uri_path = "/1/logs/:id"
       
       report_as do |r| 
-        "#{r['project']['name']} - #{r['task']} (#{r['id']}) spent #{r['duration'].to_i.seconds_to_hhmm}" 
+        "(#{r['id']}) #{r['project']['name']} - #{r['task']} spent #{r['duration'].to_i.seconds_to_hhmm}" 
       end
       
       # note currently id must be passed

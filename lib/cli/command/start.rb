@@ -6,12 +6,12 @@ module Track
       self.uri_path = "/1/projects/:project/logs"
       
       report_as do |r| 
-        "#{r['project']['name']} - #{r['task']} (#{r['id']}) started at #{r['started_at']}" 
+        "(#{r['id']}) #{r['project']['name']} - #{r['task']} started at #{r['started_at']}" 
       end
       
       def parse!
         @params['project'] = @argv.shift
-        @params['task'] = @argv.join(' ')
+        @params['task'] = @argv.join(' ') || ''
       end
       
       def run

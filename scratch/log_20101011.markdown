@@ -4,8 +4,8 @@
 | start x y       | POST | /projects/x/logs      | task=y         | /projects/x/logs/:id (1) |
 | restart         | POST | /projects/x/logs      | task=y         | /projects/x/logs/:id     |
 | stop            | PUT  | /logs/:id             | -              | /projects/x/logs/:id     |
-| add t x y       | POST | /projects/x/logs      | task=y&time=t  | /projects/x/logs/:id     |
-| sub t x y       | POST | /projects/x/logs      | task=y&time=-t | /projects/x/logs/:id     |
+| add t x y       | PUT  | /projects/x/logs      | task=y&time=t  | /projects/x/logs/:id     |
+| sub t x y       | PUT  | /projects/x/logs      | task=y&time=-t | /projects/x/logs/:id     |
 | cat             | GET  | /logs (2)             | -              | -                        |
 | cat --summary f | GET  | /logs (3)             | summary=f      | -                        |
 

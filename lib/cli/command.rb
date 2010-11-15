@@ -71,9 +71,7 @@ module Track
       end
       
       def report(body)
-        lines = self.class.report.call(body)
-        lines = [lines] unless Array === lines
-        lines.each {|line| puts line}
+        puts self.class.report.call(body)
       end
      
     protected

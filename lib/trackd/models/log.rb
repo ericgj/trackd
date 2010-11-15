@@ -42,6 +42,14 @@ module Trackd
       self.stopped_at = t; save
       self
     end
+        
+    def to_json(*args)
+      attributes.merge(
+        {:duration => duration, 
+         :project => { :id => self.project_id, 
+                       :name => project.name }
+        }).to_json(*args)
+    end
     
   end
 end

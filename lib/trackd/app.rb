@@ -65,16 +65,15 @@ module Trackd
     
     #---- API v1
     
-    # cat
+    # not used?
     get '/1/logs' do
       logs = Log.all(:order => [:started_at.desc])
-      logs.to_json(:methods => [:project, :duration])
+      logs.map.to_json
     end
-
     
     get '/1/logs/:id' do |id|
       log = Log.get(id)      
-      log.to_json(:methods => [:project, :duration])
+      log.to_json
     end
     
     # stop
@@ -83,6 +82,12 @@ module Trackd
       log = Log.get(id)
       log.stop
       redirect "/1/logs/#{log.id}"
+    end
+    
+    # cat
+    get '/1/projects' do
+      projs = Project.all(:order => [:name])
+      projs.map.to_json
     end
     
     # start / restart
@@ -95,7 +100,16 @@ module Trackd
       log = p.start_log(task, dur)
       redirect "/1/logs/#{log.id}"
     end
-    
+
+    # add / sub
+    put '/1/projects/:name/logs' do |name|
+      t = Time.now
+      dur = (params[:time] || 0).to_i
+      task = params[:task]
+      p = Project.first_or_create(:name => name)
+      log = p.add_log(task, dur)
+      redirect "/1/logs/#{log.id}"
+    end
        
    private
    
