@@ -44,16 +44,38 @@ as a skinny daemon + command-line client.
 ## REST API 
 (v1 draft - not fully implemented)
 
-| Command         | Verb | URL                     | Params         | Redirect to              |
-| start x y       | POST | /1/projects/x/logs      | task=y         | /logs/:id (1)            |
-| restart         | POST | /1/projects/x/logs      | task=y         | /logs/:id                |
-| stop            | PUT  | /1/logs/:id             | -              | /logs/:id                |
-| add t x y       | PUT  | /1/projects/x/logs      | task=y&time=t  | /logs/:id                |
-| sub t x y       | PUT  | /1/projects/x/logs      | task=y&time=-t | /logs/:id                |
-| cat             | GET  | /1/projects (2)         | -              | -                        |
-| status          | GET  | /1/status (3)           | -              | -                        |
-| status x        | GET  | /1/projects/x/status (4)| -              | -                        |
-| status x y      | GET  | /1/projects/x/status (5)| task=y         | -                        |
+<table><tbody>
+<th>
+  <td> Command         </td><td> Verb </td><td> URL                     </td><td> Params         </td><td> Redirect to              </td>
+</th>
+<tr>
+  <td> start x y       </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /logs/:id (1)            </td>
+</tr>
+<tr>
+  <td> restart         </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /logs/:id                </td>
+</tr>
+<tr>
+  <td> stop            </td><td> PUT  </td><td> /1/logs/:id             </td><td> -              </td><td> /logs/:id                </td>
+</tr>
+<tr>
+  <td> add t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=t  </td><td> /logs/:id                </td>
+</tr>
+<tr>
+  <td> sub t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=-t </td><td> /logs/:id                </td>
+</tr>
+<tr>
+  <td> cat             </td><td> GET  </td><td> /1/projects (2)         </td><td> -              </td><td> -                        </td>
+</tr>
+<tr>
+  <td> status          </td><td> GET  </td><td> /1/status (3)           </td><td> -              </td><td> -                        </td>
+</tr>
+<tr>
+  <td> status x        </td><td> GET  </td><td> /1/projects/x/status (4)</td><td> -              </td><td> -                        </td>
+</tr>
+<tr>
+  <td> status x y      </td><td> GET  </td><td> /1/projects/x/status (5)</td><td> task=y         </td><td> -                        </td>
+</tr>
+</tbody></table>
 
 (1) project-log message:
 
