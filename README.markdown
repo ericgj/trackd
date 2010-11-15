@@ -45,9 +45,9 @@ as a skinny daemon + command-line client.
 (v1 draft - not fully implemented)
 
 <table><tbody>
-<th>
+<tr>
   <td> Command         </td><td> Verb </td><td> URL                     </td><td> Params         </td><td> Redirect to              </td>
-</th>
+</tr>
 <tr>
   <td> start x y       </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /logs/:id (1)            </td>
 </tr>
