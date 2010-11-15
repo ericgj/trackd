@@ -8,7 +8,8 @@ module Trackd
     has n, :logs
     
     def add_log(task = nil, dur = 0)
-      log = Log.new(:task => task, :adjusted => dur)
+      t = Time.now
+      log = Log.new(:task => task, :adjusted => dur, :started_at => t, :stopped_at => t)
       self.logs << log
       log.save; log
     end

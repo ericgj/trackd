@@ -109,6 +109,7 @@ as a skinny daemon + command-line client.
   
 (3) server status message:
 
+    server_uptime : <int>
     total_duration : <int>
     projects :
       -

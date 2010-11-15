@@ -23,6 +23,7 @@ module Trackd
       logger.info "Trackd::App shutdown started"
       logger.info "Stopping started logs..."
       stop_current
+      Server.down!
     end
     
     #---- Dbase config
@@ -54,7 +55,10 @@ module Trackd
       logger.info "Database connection established"
     end
 
-    configure { logger.info "Trackd::App is running" }
+    configure do 
+      logger.info "Trackd::App is running"
+      Server.up!
+    end
     
     #---- REST paths
     
@@ -64,6 +68,14 @@ module Trackd
     end
     
     #---- API v1
+    
+    # status
+    get '/1/status' do
+      { :server_uptime => Server.uptime,
+        :total_duration => Log.total_duration,
+        :projects => Queries.project_status.map
+      }.to_json
+    end
     
     # not used?
     get '/1/logs' do
