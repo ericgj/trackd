@@ -12,10 +12,11 @@ module Track
       report_as do |r| 
         ["Server uptime:     #{r['server_uptime'].to_i.seconds_to_hhmm}" , 
          "Total logged time: #{r['total_duration'].to_i.seconds_to_hhmm}",
-         "Project time:"
+         "Project time and last task:"
         ] + 
         r['projects'].map do |p|
-          "  #{p['name']}   #{p['total_duration'].to_i.seconds_to_hhmm}  last: #{Time.parse(p['last_started_at']).strftime('%a %d %b %Y %I:%M%p')} #{p['last_task']}"
+          t = Time.parse(p['last_started_at'])
+          "  #{p['name']}  #{p['total_duration'].to_i.seconds_to_hhmm}  #{t.strftime('%a %d %b %Y %I:%M%p') if t}  #{p['last_task']}"
         end
       end
             
