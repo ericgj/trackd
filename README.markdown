@@ -13,10 +13,10 @@ as a skinny daemon + command-line client.
     # or
     track start FooProject baz task
     
-    # stop time on current  => PUT /1/logs/1
+    # stop time on current  => PUT /1/current/logs
     track stop
     
-    # restart current   => POST /1/projects/FooProject/logs?task=baz%20task
+    # restart last   => POST /1/last/logs
     track restart
     
     # print report of times by project and task  => GET /1/projects
@@ -34,7 +34,7 @@ as a skinny daemon + command-line client.
     # add time to named task    =>  PUT /1/projects/FooProject/logs?task=baz%20task&time=30
     track add 00:30 FooProject baz task
     
-    # subtract time from current  => PUT /1/projects/FooProject/logs?task=baz%20task&time=-60
+    # subtract time from last  => PUT /1/last/logs?time=-60
     track sub 01:00
     
     # add shortcut
@@ -49,19 +49,25 @@ as a skinny daemon + command-line client.
   <td> Command         </td><td> Verb </td><td> URL                     </td><td> Params         </td><td> Redirect to              </td>
 </tr>
 <tr>
-  <td> start x y       </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /logs/:id (1)            </td>
+  <td> start x y       </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /1/logs/:id (1)            </td>
 </tr>
 <tr>
-  <td> restart         </td><td> POST </td><td> /1/projects/x/logs      </td><td> task=y         </td><td> /logs/:id                </td>
+  <td> restart         </td><td> POST </td><td> /1/last/logs      </td><td> -         </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
-  <td> stop            </td><td> PUT  </td><td> /1/logs/:id             </td><td> -              </td><td> /logs/:id                </td>
+  <td> stop            </td><td> PUT  </td><td> /1/current/logs             </td><td> -              </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
-  <td> add t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=t  </td><td> /logs/:id                </td>
+  <td> add t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=t  </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
-  <td> sub t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=-t </td><td> /logs/:id                </td>
+  <td> add t           </td><td> PUT  </td><td> /1/last/logs      </td><td> time=t  </td><td> /1/logs/:id                </td>
+</tr>
+<tr>
+  <td> sub t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=-t </td><td> /1/logs/:id                </td>
+</tr>
+<tr>
+  <td> sub t           </td><td> PUT  </td><td> /1/last/logs      </td><td> time=-t  </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
   <td> cat             </td><td> GET  </td><td> /1/projects (2)         </td><td> -              </td><td> -                        </td>
@@ -149,12 +155,4 @@ as a skinny daemon + command-line client.
       name: <string>
      
 
-## Client state - proposal
-
-For _restart_ and _stop_, client needs to persist _current log_ between calls.  In addition there are the shortcuts.
-Since it's not a web client I propose writing these to a text file in ~/, or to a PStore.
-
-Note that my workflow is really one project-task at a time, so no need to get complicated.
-When `track start y` and there's a current log, it should `track stop` first.
-Or I suppose this could be handled by the server.
 

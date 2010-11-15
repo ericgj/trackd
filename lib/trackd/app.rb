@@ -69,6 +69,7 @@ module Trackd
     
     #---- API v1
     
+    #------  Status
     # status
     get '/1/status' do
       { :server_uptime => Server.uptime,
@@ -77,37 +78,96 @@ module Trackd
       }.to_json
     end
     
+    #------  Logs
     # cat
     get '/1/logs' do
       logs = Log.all(:order => [:started_at.desc])
       logs.map.to_json
     end
-    
+        
     get '/1/logs/:id' do |id|
       log = Log.get(id)      
       log.to_json
     end
     
-    # stop
+    # stop -- no longer used, use PUT /1/current/logs
     put '/1/logs/:id' do |id|
       t = Time.now
       log = Log.get(id)
       log.stop
       redirect "/1/logs/#{log.id}"
     end
+
+    #------  Current Log
+       
+    get '/1/current/logs' do
+      log = Log.started(:order => [:started_at.desc]).first
+      if log
+        redirect "/1/logs/#{log.id}"
+      else
+        halt 404, "No current log"        
+      end
+    end
     
+    # stop current
+    put '/1/current/logs' do
+      log = Log.started(:order => [:started_at.desc]).first
+      if log
+        log.stop 
+        redirect "/1/logs/#{log.id}"
+      else
+        halt 404, "No current log"
+      end
+    end
+
+    #------  Last Log
+
+    get '/1/last/logs' do
+      log = Log.stopped(:order => [:stopped_at.desc]).first
+      if log
+        redirect "/1/logs/#{log.id}"
+      else
+        halt 404, "No last log"
+      end
+    end
+    
+    # restart
+    post '/1/last/logs' do
+      lastlog = Log.stopped(:order => [:stopped_at.desc]).first
+      if lastlog
+        stop_current
+        log = lastlog.project.start_log(lastlog.task)
+        redirect "/1/logs/#{log.id}"
+      else
+        halt 404, "No last log"
+      end
+    end
+    
+    # add / sub
+    put '/1/last/logs' do |name|
+      dur = (params[:time] || 0).to_i
+      lastlog = Log.stopped(:order => [:stopped_at.desc]).first
+      if lastlog
+        log = lastlog.project.add_log(lastlog.task, dur)
+        redirect "/1/logs/#{log.id}"
+      else
+        halt 404, "No last log"
+      end
+    end
+    
+    
+    #------  Projects
     # not used?
     get '/1/projects' do
       projs = Project.all(:order => [:name])
       projs.map.to_json
     end
     
-    # start / restart
+    # start
     post '/1/projects/:name/logs' do |name|
-      t = Time.now
-      stop_current
       dur = (params[:time] || 0).to_i
       task = params[:task]
+      stop_current
       p = Project.first_or_create(:name => name)
       log = p.start_log(task, dur)
       redirect "/1/logs/#{log.id}"
@@ -115,7 +175,6 @@ module Trackd
 
     # add / sub
     put '/1/projects/:name/logs' do |name|
-      t = Time.now
       dur = (params[:time] || 0).to_i
       task = params[:task]
       p = Project.first_or_create(:name => name)
@@ -123,6 +182,7 @@ module Trackd
       redirect "/1/logs/#{log.id}"
     end
        
+    
    private
    
     def stop_current(t = Time.now); self.class.stop_current(t); end

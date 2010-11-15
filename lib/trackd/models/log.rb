@@ -11,12 +11,12 @@ module Trackd
     
     belongs_to :project
     
-    def self.started
-      all :started_at.not => nil, :stopped_at => nil
+    def self.started(opts = {})
+      all opts.merge({:started_at.not => nil, :stopped_at => nil})
     end
     
-    def self.stopped
-      all :stopped_at.not => nil
+    def self.stopped(opts = {})
+      all opts.merge(:stopped_at.not => nil)
     end
     
     def self.total_duration
