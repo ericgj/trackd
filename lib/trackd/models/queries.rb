@@ -18,7 +18,7 @@ module Queries
           INNER JOIN
             (SELECT t.project_id, SUM(t.dur) as total_duration 
              FROM 
-               (SELECT project_id, (coalesce(strftime('%s',stopped_at) - strftime('%s',started_at),0) + adjusted) AS dur 
+               (SELECT project_id, ( coalesce(strftime('%s',stopped_at), strftime('%s','now')) - strftime('%s',started_at) + adjusted ) AS dur 
                 FROM trackd_logs
                ) as t
              GROUP BY t.project_id
@@ -27,7 +27,7 @@ module Queries
           LEFT OUTER JOIN
             (SELECT t.project_id, t.started_at as last_started_at, t.stopped_at as last_stopped_at, t.task as last_task, t.dur as last_duration
              FROM
-               (SELECT *, (coalesce(strftime('%s',stopped_at) - strftime('%s',started_at),0) + adjusted) AS dur 
+               (SELECT *, ( coalesce(strftime('%s',stopped_at), strftime('%s','now')) - strftime('%s',started_at) + adjusted ) AS dur 
                 FROM trackd_logs
                ) as t 
              INNER JOIN
