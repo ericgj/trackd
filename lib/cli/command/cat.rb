@@ -3,15 +3,22 @@ module Track
 
     class Cat < Command
       
-      self.uri_path = "/1/projects"
+      self.uri_path = "/1/logs"
       
       # TODO class to do table formatting...
       report_as do |recs| 
+        lastdt = nil
         recs.map do |r|
-          ["#{r['name']}"] + \
-            r['logs'].map do |log|
-              "  #{log['task']}   #{log['duration'].to_i.seconds_to_hhmm}"
-            end
+          t0 = Time.parse(r['started_at'])
+          t1 = Time.parse(r['stopped_at'])
+          dt = Date.civil(t0.year, t0.month, t0.day)
+          lines = []
+          unless lastdt == dt
+            lines << "#{dt.strftime('%a %d %b %Y')}"
+          end
+          lines << "  #{t0.strftime('%I:%M%p')}  #{t1.strftime('%I:%M%p')}  #{r['duration'].to_i / 60}  #{r['project']['name']}  #{r['task']}"
+          lastdt = dt
+          lines
         end.flatten
       end
             

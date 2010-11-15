@@ -77,7 +77,7 @@ module Trackd
       }.to_json
     end
     
-    # not used?
+    # cat
     get '/1/logs' do
       logs = Log.all(:order => [:started_at.desc])
       logs.map.to_json
@@ -96,7 +96,7 @@ module Trackd
       redirect "/1/logs/#{log.id}"
     end
     
-    # cat
+    # not used?
     get '/1/projects' do
       projs = Project.all(:order => [:name])
       projs.map.to_json
