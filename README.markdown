@@ -78,7 +78,7 @@ as a skinny daemon + command-line client.
   <td> sub t           </td><td> PUT  </td><td> /1/last/logs      </td><td> time=-t  </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
-  <td> cat             </td><td> GET  </td><td> /1/projects (2)         </td><td> -              </td><td> -                        </td>
+  <td> cat             </td><td> GET  </td><td> /1/logs (2)         </td><td> -              </td><td> -                        </td>
 </tr>
 <tr>
   <td> status          </td><td> GET  </td><td> /1/status (3)           </td><td> -              </td><td> -                        </td>
@@ -106,7 +106,23 @@ All messages are in JSON format.
       id: <int>
       name: <string>
     
-(2) project-logs message:
+(2) logs message (order by started_at desc)
+    
+    -
+      id: <int>
+      task : <string>
+      started_at : <time>
+      stopped_at : <time>
+      adjusted : <int>
+      duration : <int>
+      message : <string>
+      project :
+        id: <int>
+        name: <string>
+    -
+      # ...
+
+project-logs message -- not currently used, GET /1/projects
 
     -
       name : <string>
@@ -125,7 +141,7 @@ All messages are in JSON format.
         - # ...
     # ...
   
-(3) server status message:
+(3) server status message (note projects are ordered by last_started_at desc, project name)
 
     server_uptime : <int>
     total_duration : <int>
@@ -152,7 +168,7 @@ All messages are in JSON format.
         # ...
     
     
-(4) project status message:
+(4) project status message:  (not yet implemented)
 
     name : <string>
     total_duration : <int>
@@ -166,7 +182,7 @@ All messages are in JSON format.
       -
         # ...
       
-(5) project-task status message:
+(5) project-task status message:   (not yet implemented)
     
     task : <string>
     last_started_at : <time>
