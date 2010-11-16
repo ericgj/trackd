@@ -1,4 +1,4 @@
-=begin
+=begin rdoc
 = trackd
 
 A rewrite of the command-line ReinH-track (voxdolo/track)
@@ -95,7 +95,7 @@ as a skinny daemon + command-line client.
 </tbody></table>
 
 =end
-=begin
+=begin rdoc
 
 All messages are in JSON format.
 
