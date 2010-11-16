@@ -1,20 +1,25 @@
-# trackd
+=begin
+= trackd
 
 A rewrite of the command-line ReinH-track (voxdolo/track)
 as a skinny daemon + command-line client.
 
-## Usage
+== Usage
 
     # start server daemon
     trackd -d start
     
-    # start time  => POST /1/projects/FooProject/logs?task=baz%20task
-    track FooProject baz task
-    # or
-    track start FooProject baz task
+    # start time  => POST /1/projects/my-project/logs?task=config%20dbase
+    track start my-project config dbase
+    
+    # or simply
+    track my-project config dbase
     
     # stop time on current  => PUT /1/current/logs
     track stop
+    
+    # stop time with message  => PUT /1/current/logs?message=I%20did%20some%20work
+    track stop "I did some work"
     
     # restart last   => POST /1/last/logs
     track restart
@@ -25,24 +30,27 @@ as a skinny daemon + command-line client.
     # print summary report by project   => GET /1/status
     track status
     
-    # print summary report for project by task   => GET /1/projects/FooProject/status
-    track status FooProject
+    # print summary report for project by task   => GET /1/projects/my-project/status
+    track status my-project
     
-    # print summary report by project and task   => GET /1/projects/FooProject/status?task=baz%20task
-    track status FooProject baz task
+    # print summary report by project and task   => GET /1/projects/my-project/status?task=config%20dbase
+    track status my-project config dbase
     
-    # add time to named task    =>  PUT /1/projects/FooProject/logs?task=baz%20task&time=30
-    track add 00:30 FooProject baz task
+    # add time to named task    =>  PUT /1/projects/my-project/logs?task=config%20dbase&time=30
+    track add 00:30 my-project config dbase
     
     # subtract time from last  => PUT /1/last/logs?time=-60
     track sub 01:00
     
     # add shortcut
-    track shortcut add fp FooProject
+    track shortcut add mp my-project
     
 
-## REST API 
+== REST API 
 (v1 draft - not fully implemented)
+
+=end
+=begin html
 
 <table><tbody>
 <tr>
@@ -56,6 +64,9 @@ as a skinny daemon + command-line client.
 </tr>
 <tr>
   <td> stop            </td><td> PUT  </td><td> /1/current/logs             </td><td> -              </td><td> /1/logs/:id                </td>
+</tr>
+<tr>
+  <td> stop m          </td><td> PUT  </td><td> /1/current/logs/?message=m  </td><td> -              </td><td> /1/logs/:id                </td>
 </tr>
 <tr>
   <td> add t x y       </td><td> PUT  </td><td> /1/projects/x/logs      </td><td> task=y&time=t  </td><td> /1/logs/:id                </td>
@@ -83,7 +94,12 @@ as a skinny daemon + command-line client.
 </tr>
 </tbody></table>
 
-(1) project-log message:
+=end
+=begin
+
+All messages are in JSON format.
+
+(1) log message:
 
     id: <int>
     task : <string>
@@ -91,11 +107,12 @@ as a skinny daemon + command-line client.
     stopped_at : <time>
     adjusted : <int>
     duration : <int>
+    message : <string>
     project :
       id: <int>
       name: <string>
     
-(2) logs message:
+(2) project-logs message:
 
     -
       name : <string>
@@ -106,6 +123,7 @@ as a skinny daemon + command-line client.
           stopped_at : <time>
           adjusted : <int>
           duration : <int>
+          message : <string>
         -
           # ...
       name : <string>
@@ -156,3 +174,4 @@ as a skinny daemon + command-line client.
      
 
 
+=end

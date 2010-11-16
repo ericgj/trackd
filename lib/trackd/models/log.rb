@@ -7,6 +7,7 @@ module Trackd
     property :adjusted, Integer, :default => 0
     property :started_at, Time
     property :stopped_at, Time
+    property :message, Text
     property :project_id, Integer
     
     belongs_to :project

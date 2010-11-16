@@ -111,8 +111,10 @@ module Trackd
     
     # stop current
     put '/1/current/logs' do
+      message = params[:message]
       log = Log.started(:order => [:started_at.desc]).first
       if log
+        log.message = message
         log.stop 
         redirect "/1/logs/#{log.id}"
       else

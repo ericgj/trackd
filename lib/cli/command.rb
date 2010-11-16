@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
 require 'json/pure'
+require 'pp'
 
 module Track
   module CLI
@@ -31,7 +32,7 @@ module Track
       def uri_path
         return unless self.class.uri_path
         self.class.uri_path.gsub(/:(\w+)/) do |s|
-          @params[$1] || $1
+          URI.escape(@params[$1].to_s || $1)
         end
       end
       
@@ -78,6 +79,7 @@ module Track
     
       def get(path=nil)
         path ||= uri_path
+        puts ">> GET #{path}"
         Net::HTTP.start(base_uri.host, base_uri.port) do |http|
           http.get(path)
         end
@@ -85,11 +87,14 @@ module Track
       
       def post(path=nil, data = {})
         path ||= uri_path
+        puts ">> POST #{path}"
+        pp data unless data.keys.empty?
         Net::HTTP.post_form(URI.join(base_uri.to_s, path), data)
       end
       
       def put(path=nil)
         path ||= uri_path
+        puts ">> PUT #{path}"
         req = Net::HTTP::Put.new(path)
         Net::HTTP.start(base_uri.host, base_uri.port) do |http|
           http.request(req)
@@ -98,6 +103,7 @@ module Track
       
       def delete(path=nil)
         path ||= uri_path
+        puts ">> DELETE #{path}"
         req = Net::HTTP::Delete.new(path)
         Net::HTTP.start(base_uri.host, base_uri.port) do |http|
           http.request(req)

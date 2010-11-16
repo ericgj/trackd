@@ -9,6 +9,7 @@ module Track
       
       DEFAULT_HOST = 'localhost'
       DEFAULT_PORT = 2003
+      DEFAULT_COMMAND = 'start'
       
       def self.commands
         COMMANDS
@@ -41,7 +42,7 @@ module Track
           opts.separator ""
           opts.separator "Commands:"
           opts.separator "  start project [task]         Start timing project/task"
-          opts.separator "  stop                         Stop timing last project/task"
+          opts.separator "  stop [message]               Stop timing last project/task"
           opts.separator "  restart                      Restart last project/task"
           opts.separator "  add time [project] [task]    Add time (hh:mm)"
           opts.separator "  sub time [project] [task]    Subtract time (hh:mm)"
@@ -54,18 +55,21 @@ module Track
       def parse!
         parser.parse! @argv
         @command   = @argv.shift
-        @params = @argv    
+        if self.class.commands.include?(@command.downcase)
+          @params = @argv
+        else
+          @params = [@command] + @argv
+          @command = DEFAULT_COMMAND 
+        end
       end
       
       def run
-        if self.class.commands.include?(@command)
-          run_command
-        elsif @command.nil?
-          puts "Command required"
+        if @command.nil?
+          puts "No command given"
           puts @parser
           exit 1  
         else
-          abort "Unknown command: #{@command}. Use one of #{self.class.commands.join(', ')}"
+          run_command
         end
       end
 
