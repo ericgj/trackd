@@ -38,6 +38,7 @@ module Queries
              ON t.project_id = last.project_id AND t.started_at = last.last_started_at
             ) as c
           ON a.id = c.project_id
+          ORDER BY c.last_started_at DESC, a.name
         }
     )
   end

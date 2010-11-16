@@ -74,7 +74,8 @@ module Trackd
     get '/1/status' do
       { :server_uptime => Server.uptime,
         :total_duration => Log.total_duration,
-        :projects => Queries.project_status.map
+        :projects => Queries.project_status.map,
+        :current_log => Log.started(:order => [:started_at.desc]).first
       }.to_json
     end
     

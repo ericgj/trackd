@@ -129,6 +129,17 @@ All messages are in JSON format.
 
     server_uptime : <int>
     total_duration : <int>
+    current_log:
+      id: <int>
+      task : <string>
+      started_at : <time>
+      stopped_at : <time>
+      adjusted : <int>
+      duration : <int>
+      message : <string>
+      project :
+        id: <int>
+        name: <string>
     projects :
       -
         name : <string>

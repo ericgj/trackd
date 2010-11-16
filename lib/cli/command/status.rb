@@ -12,6 +12,11 @@ module Track
       report_as do |r| 
         ["Server uptime:     #{r['server_uptime'].to_i.seconds_to_hhmm}" , 
          "Total logged time: #{r['total_duration'].to_i.seconds_to_hhmm}",
+         if r['current_log']
+           "Current task: #{r['current_log']['project']['name']} - #{r['current_log']['task']}  #{r['current_log']['duration'].to_i.seconds_to_hhmm}"
+         else
+           "Current task: -------"
+         end ,
          "Project time and last task:"
         ] + 
         r['projects'].map do |p|
