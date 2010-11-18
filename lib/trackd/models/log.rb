@@ -20,6 +20,12 @@ module Trackd
       all opts.merge(:stopped_at.not => nil)
     end
     
+    def self.stop_current!
+      transaction do
+        started.each {|log| log.stop!(t) }
+      end
+    end
+    
     def self.total_duration
       repository(:default).adapter.select(
         %q{ SELECT SUM(t.dur) FROM 
@@ -34,12 +40,12 @@ module Trackd
       ((self.stopped_at || t) - (self.started_at || t) + self.adjusted).to_i
     end
         
-    def start(t = Time.now)
+    def start!(t = Time.now)
       self.started_at = t; save
       self
     end
     
-    def stop(t = Time.now)
+    def stop!(t = Time.now)
       self.stopped_at = t; save
       self
     end

@@ -13,16 +13,10 @@ module Trackd
       end      
     end
 
-    def self.stop_current(t = Time.now)
-      Log.transaction do
-        Log.started.each {|log| log.stop(t) }
-      end
-    end
-    
     def self.at_exit
       logger.info "Trackd::App shutdown started"
       logger.info "Stopping started logs..."
-      stop_current
+      Log.stop_current!
       Server.down!
     end
     
@@ -95,7 +89,7 @@ module Trackd
     put '/1/logs/:id' do |id|
       t = Time.now
       log = Log.get(id)
-      log.stop
+      log.stop!
       redirect "/1/logs/#{log.id}"
     end
 
@@ -116,7 +110,7 @@ module Trackd
       log = Log.started(:order => [:started_at.desc]).first
       if log
         log.message = message
-        log.stop 
+        log.stop! 
         redirect "/1/logs/#{log.id}"
       else
         halt 404, "No current log"
@@ -138,8 +132,8 @@ module Trackd
     post '/1/last/logs' do
       lastlog = Log.stopped(:order => [:stopped_at.desc]).first
       if lastlog
-        stop_current
-        log = lastlog.project.start_log(lastlog.task)
+        Log.stop_current!
+        log = lastlog.project.start_log!(lastlog.task)
         redirect "/1/logs/#{log.id}"
       else
         halt 404, "No last log"
@@ -151,7 +145,7 @@ module Trackd
       dur = (params[:time] || 0).to_i
       lastlog = Log.stopped(:order => [:stopped_at.desc]).first
       if lastlog
-        log = lastlog.project.add_log(lastlog.task, dur)
+        log = lastlog.project.add_log!(lastlog.task, dur)
         redirect "/1/logs/#{log.id}"
       else
         halt 404, "No last log"
@@ -170,9 +164,9 @@ module Trackd
     post '/1/projects/:name/logs' do |name|
       dur = (params[:time] || 0).to_i
       task = params[:task]
-      stop_current
+      Log.stop_current!
       p = Project.first_or_create(:name => name)
-      log = p.start_log(task, dur)
+      log = p.start_log!(task, dur)
       redirect "/1/logs/#{log.id}"
     end
 
@@ -181,14 +175,9 @@ module Trackd
       dur = (params[:time] || 0).to_i
       task = params[:task]
       p = Project.first_or_create(:name => name)
-      log = p.add_log(task, dur)
+      log = p.add_log!(task, dur)
       redirect "/1/logs/#{log.id}"
     end
-       
-    
-   private
-   
-    def stop_current(t = Time.now); self.class.stop_current(t); end
-       
+              
   end
 end
