@@ -17,9 +17,11 @@ module Track
             lines << "#{dt.strftime('%a %d %b %Y') if dt}"
           end
           lines << "  #{t0 ? t0.strftime('%I:%M%p') : '-------'}  #{t1 ? t1.strftime('%I:%M%p') : '-------'}  #{r['duration'].to_i / 60}  #{r['project']['name']}  #{r['task']}"
-          lines << "    #{r['message']}" if r['message']
+          if r['message'] && !r['message'].empty?
+            lines << "    #{r['message']}"
+          end
           lastdt = dt
-          lines
+          lines.compact
         end.flatten
       end
             
