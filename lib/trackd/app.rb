@@ -58,7 +58,8 @@ module Trackd
     
     get '/' do
       sum = Log.total_duration
-      "Trackd: tracking #{sum ? sum.seconds_to_hhmm : 'zero'} hours for #{Project.count} projects"
+      "Tracking #{sum ? sum.seconds_to_hhmm : 'zero'} hours for #{Project.count} projects\n" +
+      "#{ENV['RACK_ENV']}"
     end
     
     #---- API v1

@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+# Sample post-commit hook using track
+# - sends git commit message to track stop
+# - then track restart
+
+msg = `git log -1`.split("\n")[4..-1].join("\n").strip.chomp
+
+`track ping`
+
+if $?.exitstatus == 0 
+  `trackd stop #{msg}`
+end
+
+if $?.exitstatus == 0 
+  `trackd restart`
+end

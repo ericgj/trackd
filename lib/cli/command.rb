@@ -62,7 +62,6 @@ module Track
       def render(resp)
         case resp
         when Net::HTTPSuccess
-          #puts resp.body
           report JSON.parse(resp.body)
         when Net::HTTPRedirection
           render get(resp['location'])
@@ -72,7 +71,7 @@ module Track
       end
       
       def report(body)
-        puts self.class.report.call(body)
+        puts self.class.report.call(body) if self.class.report
       end
      
     protected

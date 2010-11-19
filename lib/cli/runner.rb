@@ -5,7 +5,7 @@ module Track
   module CLI
     
     class Runner
-      COMMANDS            = %w(start stop restart add sub cat status)
+      COMMANDS            = %w(start stop restart add sub cat status ping)
       
       DEFAULT_HOST = 'localhost'
       DEFAULT_PORT = 2003
@@ -48,6 +48,7 @@ module Track
           opts.separator "  sub time [project] [task]    Subtract time (hh:mm)"
           opts.separator "  cat                          List logged times"
           opts.separator "  status [project] [task]      List summary times"
+          opts.separator "  ping                         Determine if server running or not"
         end
         
       end
