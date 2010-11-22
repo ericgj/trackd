@@ -6,7 +6,8 @@ module Track
       self.uri_path = "/"
       
       def run
-        puts get.body 
+        resp = get.body 
+        puts "Server found, response:\n" + resp
       end
             
     end

@@ -7,7 +7,6 @@
 msg = `git log -1`.split("\n")[4..-1].join("\n").strip.chomp
 
 `track ping`
-
 if $?.exitstatus == 0 
   `trackd stop #{msg}`
 end
