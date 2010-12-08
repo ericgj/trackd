@@ -42,8 +42,11 @@ module Trackd
 
     configure :production, :test, :development do
       load_models
-      DataMapper.auto_migrate! \
-        if DataMapper.repository(:default).adapter.options['path'] == ':memory:' 
+      if DataMapper.repository(:default).adapter.options['path'] == ':memory:'
+        DataMapper.auto_migrate!
+      else  
+        DataMapper.auto_upgrade!
+      end
         #  unless DataMapper.storage_exists?
       DataMapper.finalize
       logger.info "Database connection established"
