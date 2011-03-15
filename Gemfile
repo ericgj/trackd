@@ -3,6 +3,8 @@ source "http://gems.rubyforge.org"
 # default
 gem "sinatra"
 gem "json_pure"
+gem "datamapper"
+gem "dm-sqlite-adapter"
 
 group :client do
   gem "httparty"
