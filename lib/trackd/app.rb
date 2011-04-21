@@ -145,11 +145,11 @@ module Trackd
     end
     
     # add / sub
-    put '/1/last/logs' do |name|
+    put '/1/last/logs' do
       dur = (params[:time] || 0).to_i
       lastlog = Log.stopped(:order => [:stopped_at.desc]).first
       if lastlog
-        log = lastlog.project.add_log!(lastlog.task, dur)
+        log = lastlog.project.add_log!(lastlog.task, dur.to_i)
         redirect "/1/logs/#{log.id}"
       else
         halt 404, "No last log"
