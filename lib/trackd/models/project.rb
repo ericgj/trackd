@@ -24,8 +24,12 @@ module Trackd
       log.start!; log
     end
           
+    def json_attributes
+      attributes.merge({:logs => logs.map.to_a})
+    end
+    
     def to_json(*args)
-      attributes.merge({:logs => logs.map}).to_json(*args)
+      json_attributes.to_json(*args)
     end
     
   end

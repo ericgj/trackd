@@ -42,10 +42,12 @@ module Trackd
     end
         
     def adjusted_started_at
+      return nil unless self.started_at && self.adjusted_start
       self.started_at + self.adjusted_start
     end
     
     def adjusted_stopped_at
+      return nil unless self.stopped_at && self.adjusted
       self.stopped_at + self.adjusted
     end
     
@@ -59,7 +61,7 @@ module Trackd
       self
     end
         
-    def to_json(*args)
+    def json_attributes
       attributes.merge(
         {:original_started_at => self.started_at,
          :original_stopped_at => self.stopped_at,
@@ -68,7 +70,11 @@ module Trackd
          :duration => duration, 
          :project => { :id => self.project_id, 
                        :name => project.name }
-        }).to_json(*args)
+        })    
+    end
+    
+    def to_json(*args)
+      json_attributes.to_json(*args)
     end
     
   end
