@@ -1,0 +1,39 @@
+## Proposal to allow *editing logs*
+
+Right now, `track add` and `track sub`, unlike `track stop`, create *new* log records.  The purpose of these records is simply to correct the running total of time duration - the start and stop time are basically meaningless.
+
+This is fine if all you are interested in is the running total.  But even if that were true, it is not really adequate.  As soon as you want a breakdown of time per day or week etc., you're going to run into cases where the correction comes after the time frame.
+
+### Adjusting previous or current logs
+
+What we really want to is to say 'add or subtract this amount of time *from the previous (or current) log*'.  It is possible to implement this without editing the previous log record, but the easiest way is to edit.
+
+Furthermore there are two possibilities: you want to move up or back either the starting point or the ending point.
+
+Does this mean a complication of the interface?  I don't think so necessarily.  Because you can differentiate when the task is *in process* and *completed*.  `track add` and `sub`, in the context of a task in process, means 'adjust the start time'.  In the context of a completed task, `track add` and `sub` means (usually) 'adjust the end time'.  (The case where you want to adjust the start time of a completed task is sufficiently rare that I am going to ignore it for now.)
+
+
+### Adjusting the time of a task that is not the last (or current) task.  
+
+I can think of three possibilities:
+
+  1. add separate record (like presently done)
+  2. edit record identified by id
+  3. edit record identified by project and task
+  
+I kinda like the way it's presently done for these cases (1).  Because adjusting the time later on may represent an adjustment to aggregated time instead of a specific log.  Also because (2) complicates the interface for the user, and (3) creates a dependence on exact user entry.
+
+The one thing I would change is to set the start/end time of the adjustment record, to the *last matching completed log's end time* -- instead of the current time.  That way you get the adjustment in the same time frame as the original.
+
+Alternatively you could have some convention for explicitly specifying a date, e.g. as an option  `track --at 11/30 add 0:30 foo bar`  or as a special argument  `track add 0:30 foo bar @11/30` .
+
+
+### Storing adjustments
+
+We need two adjustment fields, one for the start and one for the end time.  For the second case above (adding an adjustment record), it's the end time adjustment that needs to be set.
+
+
+### Practical considerations
+
+1. We need to fix the rake db:migrate tasks to use DataMapper migrations; for now, using auto_upgrade in Sinatra config
+2. We need test cases that will spec the behavior described here

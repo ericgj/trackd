@@ -19,8 +19,10 @@ rdoc
 pkg
 tmp
 log
-scratch
+db
+##scratch
 *.old
+.rvmrc
 
 ## PROJECT::SPECIFIC
 vendor

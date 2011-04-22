@@ -64,7 +64,7 @@ module Track
         when Net::HTTPSuccess
           report JSON.parse(resp.body)
         when Net::HTTPRedirection
-          render get(resp['location'])
+          render get(URI.parse(resp['location']).path)
         else
           #TODO
         end

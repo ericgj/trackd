@@ -5,6 +5,7 @@ module Trackd
     property :id, Serial
     property :task, String
     property :adjusted, Integer, :default => 0
+    property :adjusted_start, Integer, :default => 0
     property :started_at, Time
     property :stopped_at, Time
     property :message, Text
@@ -29,7 +30,7 @@ module Trackd
     def self.total_duration
       repository(:default).adapter.select(
         %q{ SELECT SUM(t.dur) FROM 
-              (SELECT (strftime('%s',stopped_at) - strftime('%s',started_at) + adjusted) AS dur FROM trackd_logs
+              (SELECT (strftime('%s',stopped_at) - strftime('%s',started_at) + adjusted + adjusted_start) AS dur FROM trackd_logs
               ) as t
           }
       )[0]
@@ -37,9 +38,19 @@ module Trackd
         
     def duration
       t = Time.now
-      ((self.stopped_at || t) - (self.started_at || t) + self.adjusted).to_i
+      ((self.stopped_at || t) - (self.started_at || t) + self.adjusted + self.adjusted_start).to_i
     end
         
+    def adjusted_started_at
+      return nil unless self.started_at && self.adjusted_start
+      self.started_at + self.adjusted_start
+    end
+    
+    def adjusted_stopped_at
+      return nil unless self.stopped_at && self.adjusted
+      self.stopped_at + self.adjusted
+    end
+    
     def start!(t = Time.now)
       self.started_at = t; save
       self
@@ -50,12 +61,20 @@ module Trackd
       self
     end
         
-    def to_json(*args)
+    def json_attributes
       attributes.merge(
-        {:duration => duration, 
+        {:original_started_at => self.started_at,
+         :original_stopped_at => self.stopped_at,
+         :started_at => adjusted_started_at,
+         :stopped_at => adjusted_stopped_at,
+         :duration => duration, 
          :project => { :id => self.project_id, 
                        :name => project.name }
-        }).to_json(*args)
+        })    
+    end
+    
+    def to_json(*args)
+      json_attributes.to_json(*args)
     end
     
   end

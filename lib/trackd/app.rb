@@ -42,8 +42,11 @@ module Trackd
 
     configure :production, :test, :development do
       load_models
-      DataMapper.auto_migrate! \
-        if DataMapper.repository(:default).adapter.options['path'] == ':memory:' 
+      if DataMapper.repository(:default).adapter.options['path'] == ':memory:'
+        DataMapper.auto_migrate!
+      else  
+        DataMapper.auto_upgrade!
+      end
         #  unless DataMapper.storage_exists?
       DataMapper.finalize
       logger.info "Database connection established"
@@ -69,7 +72,7 @@ module Trackd
     get '/1/status' do
       { :server_uptime => Server.uptime,
         :total_duration => Log.total_duration,
-        :projects => Queries.project_status.map,
+        :projects => Queries.project_status.map.to_a,
         :current_log => Log.started(:order => [:started_at.desc]).first
       }.to_json
     end
@@ -78,7 +81,7 @@ module Trackd
     # cat
     get '/1/logs' do
       logs = Log.all(:order => [:started_at.desc])
-      logs.map.to_json
+      logs.map(&:json_attributes).to_json
     end
         
     get '/1/logs/:id' do |id|
@@ -142,11 +145,11 @@ module Trackd
     end
     
     # add / sub
-    put '/1/last/logs' do |name|
+    put '/1/last/logs' do
       dur = (params[:time] || 0).to_i
       lastlog = Log.stopped(:order => [:stopped_at.desc]).first
       if lastlog
-        log = lastlog.project.add_log!(lastlog.task, dur)
+        log = lastlog.project.add_log!(lastlog.task, dur.to_i)
         redirect "/1/logs/#{log.id}"
       else
         halt 404, "No last log"
@@ -158,7 +161,7 @@ module Trackd
     # not used?
     get '/1/projects' do
       projs = Project.all(:order => [:name])
-      projs.map.to_json
+      projs.map(&:json_attributes).to_json
     end
     
     # start
