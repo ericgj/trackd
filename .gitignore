@@ -19,7 +19,7 @@ rdoc
 pkg
 tmp
 log
-db
+db/*.sqlite3
 ##scratch
 *.old
 .rvmrc
